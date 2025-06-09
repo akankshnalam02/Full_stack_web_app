@@ -5,37 +5,36 @@ import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import path from "path";
-import { app, io, server } from "../src/lib/socket.js";
+import { app, io, server } from "./lib/socket.js";  // fixed path
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const __dirname = path.resolve();
 
 // CORS config: allow localhost and any Vercel frontend origin dynamically
 const corsOptions = {
   origin: (origin, callback) => {
     console.log("CORS origin:", origin);
 
-    if (!origin) {
-      // Allow requests like Postman, curl with no origin header
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://chat-app-ten-mu-77.vercel.app",
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
-    if (origin === "http://localhost:5173") {
-      return callback(null, true);
-    }
-
+    // Optional fallback: allow any *.vercel.app for dev testing
     if (/^https?:\/\/[\w.-]+\.vercel\.app\/?$/.test(origin)) {
       return callback(null, true);
     }
 
-    // Reject all other origins
     return callback(new Error("CORS policy: This origin is not allowed."), false);
   },
-  credentials: true,  // allow cookies/auth headers
+  credentials: true,
 };
+
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // handle preflight requests
