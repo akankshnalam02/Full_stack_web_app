@@ -10,51 +10,37 @@ import { app, io, server } from "../src/lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;   // fallback for local dev
 const __dirname = path.resolve();
 
-app.use(cookieParser());
-
-// Allowed origins for CORS
+// ────────────────────────────────────────────────────────────
+//                 CORS CONFIGURATION
+// ────────────────────────────────────────────────────────────
 const allowedOrigins = [
-  "http://localhost:5173", // local frontend during development
-  "https://chat-app-ten-mu-77.vercel.app", // your deployed frontend
-  "https://chat-app-61fhwdi9f-akankshs-projects-65c835d4.vercel.app" // optional other frontend URL
+  "http://localhost:5173",
+  "https://chat-app-ten-mu-77.vercel.app"
 ];
 
-// CORS middleware
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like Postman, curl)
-    if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: allowedOrigins,   // Express-CORS can take an array directly
+  credentials: true         // tells browser to expose/set cookies
+};
 
-    // Allow if origin is in the allowed list
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS policy: This origin is not allowed."));
-    }
-  },
-  credentials: true, // allow cookies and credentials
-}));
+app.use(cors(corsOptions));
+// handle pre-flight requests explicitly (optional but safe)
+app.options("*", cors(corsOptions));
+// ────────────────────────────────────────────────────────────
 
+app.use(cookieParser());
 app.use(express.json());
+
 app.use("/api/auth", authRouters);
 app.use("/api/messages", messageRoutes);
 
-/*
-// Disabled serving frontend from backend
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// ───────────────  No static-frontend serving  ───────────────
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-  });
-}
-*/
-
-// Start server and connect to DB
+// start server & DB
 server.listen(PORT, () => {
-  console.log("server is running on port " + PORT);
+  console.log(`Server running on port ${PORT}`);
   connectDB();
 });
