@@ -10,24 +10,37 @@ import { app, io, server } from "../src/lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;   // fallback for local dev
+const PORT = process.env.PORT || 5000; // fallback for local dev
 const __dirname = path.resolve();
 
 // ────────────────────────────────────────────────────────────
-//                 CORS CONFIGURATION
+//                 CORS CONFIGURATION WITH ORIGIN LOGGING
 // ────────────────────────────────────────────────────────────
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://chat-app-ten-mu-77.vercel.app"
+  "https://chat-app-ten-mu-77.vercel.app",
+  // Add more URLs here if you have multiple frontend deployments
 ];
 
 const corsOptions = {
-  origin: allowedOrigins,   // Express-CORS can take an array directly
-  credentials: true         // tells browser to expose/set cookies
+  origin: (origin, callback) => {
+    console.log("CORS origin:", origin);
+    if (!origin) {
+      // Allow requests like Postman or curl with no origin
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("CORS policy: This origin is not allowed."), false);
+    }
+  },
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
-// handle pre-flight requests explicitly (optional but safe)
+
+// Handle pre-flight requests explicitly (optional but safe)
 app.options("*", cors(corsOptions));
 // ────────────────────────────────────────────────────────────
 
