@@ -25,7 +25,6 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    // Optional fallback: allow any *.vercel.app for dev testing
     if (/^https?:\/\/[\w.-]+\.vercel\.app\/?$/.test(origin)) {
       return callback(null, true);
     }
