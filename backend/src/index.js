@@ -16,25 +16,25 @@ const __dirname = path.resolve();
 // CORS config: allow localhost and any Vercel frontend origin dynamically
 const corsOptions = {
   origin: (origin, callback) => {
+    console.log("CORS origin:", origin);
+
     if (!origin) {
-      // Allow requests with no origin (Postman, curl)
+      // Allow requests like Postman, curl with no origin header
       return callback(null, true);
     }
 
-    // Allow localhost for dev
     if (origin === "http://localhost:5173") {
       return callback(null, true);
     }
 
-    // Allow any Vercel preview or production deployment
-    if (/^https?:\/\/[\w.-]+\.vercel\.app$/.test(origin)) {
+    if (/^https?:\/\/[\w.-]+\.vercel\.app\/?$/.test(origin)) {
       return callback(null, true);
     }
 
-    // Reject other origins
+    // Reject all other origins
     return callback(new Error("CORS policy: This origin is not allowed."), false);
   },
-  credentials: true,  // allow cookies and auth headers
+  credentials: true,  // allow cookies/auth headers
 };
 
 app.use(cors(corsOptions));
