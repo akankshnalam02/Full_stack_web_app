@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://full-stack-web-app-akanksh.vercel.app"
+  "https://chat-app-61fhwdi9f-akankshs-projects-65c835d4.vercel.app"
 ];
 
 app.use(cors({
