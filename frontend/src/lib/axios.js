@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  withCredentials: true,
+  baseURL: "https://fullstack-backend-en6u.onrender.com/api", // Backend API base URL
+  withCredentials: true, // to send cookies for authentication if any
 });
