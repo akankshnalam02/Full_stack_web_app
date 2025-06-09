@@ -21,7 +21,6 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin like curl or mobile apps
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -36,6 +35,8 @@ app.use(express.json());
 app.use("/api/auth", authRouters);
 app.use("/api/messages", messageRoutes);
 
+/*
+// Commented out so backend doesn't serve frontend static files
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
@@ -43,7 +44,9 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
+*/
 
+// Make sure server listens and connects to DB
 server.listen(PORT, () => {
   console.log("server is running on port " + PORT);
   connectDB();
